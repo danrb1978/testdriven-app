@@ -1,8 +1,14 @@
-from flask_script import Manager
-from project import app, db
 import unittest
 
+from flask_script import Manager
+
+from project import create_app, db
+from project.api.models import User
+
+app = create_app()
 manager = Manager(app)
+
+
 
 @manager.command
 def recreate_db():

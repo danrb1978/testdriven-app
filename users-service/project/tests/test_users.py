@@ -1,6 +1,8 @@
 import json
 import unittest
 
+from project import db
+from project.api.models import User
 from project.tests.base import BaseTestCase
 
 
@@ -16,6 +18,90 @@ class TestUserService(BaseTestCase):
         self.assertIn('pong!', data['message'])
         self.assertIn('success', data['status'])
 
+    def test_add_user(self):
+        """Ensure the POST /Users path works"""
+        with self.client:
+            response = self.client.post(
+                '/users',
+                data=json.dumps({
+                    'username':'dan',
+                    'email':'danrb1978@gmail.com'
+                }),
+                content_type = 'application/json',
+            )
+            data = json.loads(response.data.decode())
+            #print('Got Response:\n\tstatus_code: ', response.status_code)
+            #print('\n\tdata: ', data)
+            self.assertEqual(response.status_code,201)
+            self.assertIn('danrb1978@gmail.com was added!', data['message'])
+            self.assertIn('success', data['status'])
+
+    def test_add_user_invalid_json(self):
+        """Ensure error is thrown if the JSON object is empty"""
+        with self.client:
+            response = self.client.post(
+                '/users',
+                data=json.dumps({}),
+                content_type = 'application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code,400)
+            self.assertIn('Invalid payload.', data['message'])
+            self.assertIn('fail', data['status'])
+
+    def test_add_user_invalid_json_keys(self):
+        """Ensure error is thrown if the JSON object does not have a username key."""
+        with self.client:
+            response = self.client.post(
+                '/users',
+                data=json.dumps({
+                    'email':'danrb1978@gmail.com'
+                }),
+                content_type = 'application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code,400)
+            self.assertIn('Invalid payload.', data['message'])
+            self.assertIn('fail', data['status'])
+    
+    def test_add_user_duplicate_user(self):
+        """Ensure error is thrown if the email already exists."""
+        with self.client:
+            self.client.post(
+                '/users',
+                data=json.dumps({
+                    'username':'dan',
+                    'email':'danrb1978@gmail.com'
+                }),
+                content_type = 'application/json',
+            )
+            response = self.client.post(
+                '/users',
+                data=json.dumps({
+                    'username':'dan',
+                    'email':'danrb1978@gmail.com'
+                }),
+                content_type = 'application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code,400)
+            self.assertIn('Sorry. That email already exists.', data['message'])
+            self.assertIn('fail', data['status'])
+
+    def test_single_user(self):
+        """ Ensure get single user works correctly."""
+        user = User(username='dan', email='danrb1978@gmail.com')
+        db.session.add(user)
+        db.session.commit()
+        with self.client:
+            response = self.client.get(f'/users/{user.id}')
+            
+            self.assertEqual(response.status_code, 200)
+            
+            data = json.loads(response.data.decode())
+            self.assertIn('dan', data['data']['username'])
+            self.assertIn('danrb1978@gmail.com', data['data']['email'])
+            self.assertIn('success', data['status'])
 
 if __name__ == '__main__':
     unittest.main()
