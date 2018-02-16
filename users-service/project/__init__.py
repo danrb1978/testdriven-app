@@ -1,4 +1,5 @@
 import os
+from flask_cors import CORS
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -12,6 +13,9 @@ def create_app():
 
     # instantiate the app
     app = Flask(__name__)
+
+    # enable CORS
+    CORS(app)
 
     # set the config
     app_settings = os.getenv('APP_SETTINGS')
