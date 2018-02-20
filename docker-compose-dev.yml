@@ -1,7 +1,7 @@
 version: '3.3'
 
 services:
-  users-service:
+  users:
     container_name: users
     build:
       context: ./services/users
@@ -38,6 +38,6 @@ services:
     ports:
       - 80:80
     depends_on:
-      - users-service
+      - users
     links:
-      - users-service
+      - users
