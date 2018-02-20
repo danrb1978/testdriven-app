@@ -2,12 +2,12 @@ version: '3.3'
 
 services:
   users-service:
-    container_name: users-service
+    container_name: users
     build:
-      context: ./users-service
+      context: ./services/users
       dockerfile: Dockerfile-dev
     volumes:
-      - './users-service:/usr/src/app/code'
+      - './services/users:/usr/src/app/code'
     ports:
       - 5001:5000
     environment:
@@ -23,7 +23,7 @@ services:
   users-db:
     container_name: users-db
     build:
-      context: ./users-service/project/db
+      context: ./services/users/project/db
       dockerfile: Dockerfile
     ports:
       - 5435:5432
@@ -33,7 +33,7 @@ services:
 
   nginx:
     container_name: nginx
-    build: ./nginx/
+    build: ./services/nginx/
     restart: always
     ports:
       - 80:80
