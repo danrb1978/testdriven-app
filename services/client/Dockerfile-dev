@@ -12,6 +12,7 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY package.json /usr/src/app/package.json
 #adding src so that tests are available (if mounting local dirs worked, might not be needed)
 COPY src /usr/src/app/src
+COPY public /usr/src/app/public
 
 RUN npm install  --silent
 RUN npm install react-scripts@1.1.0 -g --silent

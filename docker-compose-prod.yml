@@ -1,10 +1,23 @@
 version: '3.3'
 
 services:
-  users-service:
-    container_name: users-service
+  client:
+    container_name: client
     build:
-      context: ./users-service
+      context: ./services/client
+      dockerfile: Dockerfile-prod
+      args:
+        - NODE_ENV=production
+        - REACT_APP_USERS_SERVICE_URL=http://34.201.27.17
+    ports:
+      - '3007:80'
+    depends_on:
+      - users
+
+  users:
+    container_name: users
+    build:
+      context: ./services/users
       dockerfile: Dockerfile-prod
     expose:
       - '5000'
@@ -21,7 +34,7 @@ services:
   users-db:
     container_name: users-db
     build:
-      context: ./users-service/project/db
+      context: ./services/users/project/db
       dockerfile: Dockerfile
     ports:
       - 5435:5432
@@ -31,11 +44,12 @@ services:
 
   nginx:
     container_name: nginx
-    build: ./nginx/
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile-prod
     restart: always
     ports:
       - 80:80
     depends_on:
-      - users-service
-    links:
-      - users-service
+      - users
+      - client

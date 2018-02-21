@@ -51,11 +51,14 @@ services:
 
   nginx:
     container_name: nginx
-    build: ./services/nginx/
+    build:
+      context: ./services/nginx/
+      dockerfile: Dockerfile-dev
     restart: always
     ports:
       - 80:80
     depends_on:
       - users
+      - client
     links:
       - users
