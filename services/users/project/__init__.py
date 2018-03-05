@@ -12,6 +12,7 @@ db = SQLAlchemy()
 toolbar = DebugToolbarExtension()
 migrate = Migrate()
 
+
 # http://flask.pocoo.org/docs/0.12/patterns/appfactories/
 def create_app(script_info=None):
 
@@ -28,11 +29,11 @@ def create_app(script_info=None):
     # set up extensions
     db.init_app(app)
     toolbar.init_app(app)
-    migrate.init_app(app,db,MIGRATION_DIR)
+    migrate.init_app(app, db, MIGRATION_DIR)
 
     from project.api.users import users_blueprint
     app.register_blueprint(users_blueprint)
 
-    #shell context for flask cli
-    app.shell_context_processor({'app': app, 'db':db})
+    # shell context for flask cli
+    app.shell_context_processor({'app': app, 'db': db})
     return app

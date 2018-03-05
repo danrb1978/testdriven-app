@@ -9,6 +9,7 @@ class BaseConfig:
     DEBUG_TB_ENABLED = False
     DEBUG_TB_INTERCEPT_REDIRECTS = False
 
+
 class DevelopmentConfig(BaseConfig):
     """Development Configuration"""
     DEBUG_TB_ENABLED = True
