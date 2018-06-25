@@ -15,6 +15,7 @@ toolbar = DebugToolbarExtension()
 migrate = Migrate()
 bcrypt = Bcrypt()
 
+
 # http://flask.pocoo.org/docs/0.12/patterns/appfactories/
 def create_app(script_info=None):
 

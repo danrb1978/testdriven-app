@@ -37,7 +37,8 @@ def add_user():
 
         if not user:
 
-            db.session.add(User(username=username, email=email, password=password))
+            db.session.add(User(username=username,
+                                email=email, password=password))
             db.session.commit()
 
             response_object['status'] = 'success'

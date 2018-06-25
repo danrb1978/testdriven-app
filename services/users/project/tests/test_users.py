@@ -182,13 +182,15 @@ class TestUserService(BaseTestCase):
         with self.client:
             response = self.client.post(
                 '/',
-                data=dict(username='dan', email='danrb1978@gmail.com', password='greaterthaneight'),
+                data=dict(username='dan', email='danrb1978@gmail.com',
+                          password='greaterthaneight'),
                 follow_redirects=True
             )
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'<h1>All Users</h1>', response.data)
             self.assertNotIn(b'No users', response.data)
             self.assertIn(b'dan', response.data)
+
 
 if __name__ == '__main__':
     unittest.main()
