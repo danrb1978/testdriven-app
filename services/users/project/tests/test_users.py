@@ -24,7 +24,8 @@ class TestUserService(BaseTestCase):
                 '/users',
                 data=json.dumps({
                     'username': 'dan',
-                    'email': 'danrb1978@gmail.com'
+                    'email': 'danrb1978@gmail.com',
+                    'password': 'greaterthaneight'
                 }),
                 content_type='application/json',
             )
@@ -69,7 +70,8 @@ class TestUserService(BaseTestCase):
                 '/users',
                 data=json.dumps({
                     'username': 'dan',
-                    'email': 'danrb1978@gmail.com'
+                    'email': 'danrb1978@gmail.com',
+                    'password': 'greaterthaneight'
                 }),
                 content_type='application/json',
             )
@@ -77,7 +79,8 @@ class TestUserService(BaseTestCase):
                 '/users',
                 data=json.dumps({
                     'username': 'dan',
-                    'email': 'danrb1978@gmail.com'
+                    'email': 'danrb1978@gmail.com',
+                    'password': 'greaterthaneight'
                 }),
                 content_type='application/json',
             )
@@ -88,7 +91,7 @@ class TestUserService(BaseTestCase):
 
     def test_single_user(self):
         """ Ensure get single user works correctly."""
-        user = add_user('dan', 'danrb1978@gmail.com')
+        user = add_user('dan', 'danrb1978@gmail.com', 'greaterthaneight')
         with self.client:
             response = self.client.get(f'/users/{user.id}')
 
@@ -108,6 +111,24 @@ class TestUserService(BaseTestCase):
             self.assertIn('User does not exist', data['message'])
             self.assertIn('fail', data['status'])
 
+    def test_add_user_invalid_json_keys_no_password(self):
+        """
+        Ensure error is thrown if the JSON object
+        does not have a password key
+        """
+        with self.client:
+            response = self.client.post(
+                '/users',
+                data=json.dumps(dict(
+                    username='dan',
+                    email='danrb1978@gmail.com')),
+                content_type='application/json',
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Invalid payload.', data['message'])
+            self.assertIn('fail', data['status'])
+
     def test_single_user_incorrect_id(self):
         """Ensure error is thrown if the id does not exist"""
         with self.client:
@@ -119,8 +140,8 @@ class TestUserService(BaseTestCase):
 
     def test_all_users(self):
         """Ensure get all users behaves correctly"""
-        add_user('dan', 'danrb1978@gmail.com')
-        add_user('mike', 'michael@realpython.com')
+        add_user('dan', 'danrb1978@gmail.com', 'greaterthaneight')
+        add_user('mike', 'michael@realpython.com', 'greaterthaneight')
         with self.client:
             response = self.client.get('/users')
             data = json.loads(response.data.decode())
@@ -146,8 +167,8 @@ class TestUserService(BaseTestCase):
     def test_main_with_users(self):
         """Ensure the main route behaves correctly
             when users have been added to the database"""
-        add_user('dan', 'danrb1978@gmail.com')
-        add_user('mike', 'michael@realpython.com')
+        add_user('dan', 'danrb1978@gmail.com', 'greaterthaneight')
+        add_user('mike', 'michael@realpython.com', 'greaterthaneight')
         with self.client:
             response = self.client.get('/')
             self.assertEqual(response.status_code, 200)
@@ -161,14 +182,13 @@ class TestUserService(BaseTestCase):
         with self.client:
             response = self.client.post(
                 '/',
-                data=dict(username='dan', email='danrb1978@gmail.com'),
+                data=dict(username='dan', email='danrb1978@gmail.com', password='greaterthaneight'),
                 follow_redirects=True
             )
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'<h1>All Users</h1>', response.data)
             self.assertNotIn(b'No users', response.data)
             self.assertIn(b'dan', response.data)
-
 
 if __name__ == '__main__':
     unittest.main()

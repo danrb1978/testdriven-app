@@ -1,9 +1,11 @@
 import os
+
 from flask_cors import CORS
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_migrate import Migrate
+from flask_bcrypt import Bcrypt
 
 MIGRATION_DIR = os.path.join('code', 'migrations')
 
@@ -11,7 +13,7 @@ MIGRATION_DIR = os.path.join('code', 'migrations')
 db = SQLAlchemy()
 toolbar = DebugToolbarExtension()
 migrate = Migrate()
-
+bcrypt = Bcrypt()
 
 # http://flask.pocoo.org/docs/0.12/patterns/appfactories/
 def create_app(script_info=None):
@@ -30,6 +32,7 @@ def create_app(script_info=None):
     db.init_app(app)
     toolbar.init_app(app)
     migrate.init_app(app, db, MIGRATION_DIR)
+    bcrypt.init_app(app)
 
     from project.api.users import users_blueprint
     app.register_blueprint(users_blueprint)
